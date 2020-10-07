@@ -26,27 +26,27 @@ class Solution {
         ListNode result=new ListNode();
         ListNode a=result;
         int r=0;
-        while((temp1!=null)&&(temp2!=null)){
+        while((temp1!=null)&&(temp2!=null)){#############
             int k=temp1.val+temp2.val;
             if(k+r>=10){
 
-                a.next=new ListNode(k+r-10);
+                a.next=new ListNode(k+r-10);  #第一个while在两个数字都没到头情况下计算
                 a=a.next;
                 r=1;
             }
             else{
                 a.next=new ListNode(k+r);
                 a=a.next;
-                r=0;
+                r=0;                           #r来记录进位的情况
             }
             temp1=temp1.next;
             temp2=temp2.next;
-        }
-        if(temp1==null){
+        }################################################
+        if(temp1==null){                        #如果第一个数到头了就算第二个
             while(temp2!=null){
                 int k=temp2.val;
                 if(k+r>=10){
-                    a.next=new ListNode(k+r-10);
+                    a.next=new ListNode(k+r-10);#保持了原来的逆序计数，省的最后再倒一次
                     a=a.next;
                     r=1;
                 }
@@ -63,7 +63,7 @@ class Solution {
                 r=0;
             }
         }
-        else{
+        else{                               #第二个数到头了就算第一个
             while(temp1!=null){
                 int k=temp1.val;
                 if(k+r>=10){
