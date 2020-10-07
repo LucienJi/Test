@@ -20,6 +20,7 @@ public:
             res += j + 1;                                   // 一次性加上 剩余的i
             res %= mod;
         }
+        
         return res;
     }
 };
