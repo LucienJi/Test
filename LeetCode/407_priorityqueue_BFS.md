@@ -19,7 +19,7 @@ public:
 
     }
     friend bool operator<(const Node& a,const Node&b){
-        return a.h > b.h;  // 这一步说明了，这是反的优先堆，小的在上面
+        return a.h > b.h;  // 这一步说明了，这是反的优先堆，大的在上面
     }
 };
 
