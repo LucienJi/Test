@@ -18,7 +18,7 @@ public:
             while (j >= 0 && staple[i] + drinks[j] > x) j--;    // 排除所有相加 大于 x的
             if (j == -1) break;
             res += j + 1;                                   // 一次性加上 剩余的i
-            res %= mod;
+            res %= mod;      //这个取余可以拿出来？
         }
         
         return res;
