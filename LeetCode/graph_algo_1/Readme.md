@@ -16,6 +16,57 @@
 
     > G 有n个node，且有n-1个edge，同时connected（或者cycle-free）
 
+
+# 基础算法：广度优先搜索 BFS
+
+[先是基于无权图，计算得到所有点到源节点的最短距离]
+1. 核心特征：在发现所有距离源节点为 k 距离的节点后，才会去探索 k+1 的节点
+2. 常见简单Implementation是使用 queue FIFO
+3. 节点需要被附上属性来表明是否有被搜索过
+4. Pseudocode：
+
+```cpp
+//初始化所有节点信息：
+for v in V:
+    v.state = no_visit
+    v.distance = -1
+    v.parent = NULL
+
+//放入源节点 s
+s.state = on_visit
+s.distance = 0
+s.parent = s
+
+queue.push(s)
+
+//榨干queue
+while(!queue.empty()):
+    v = queue.pop()
+    for f in N(v):
+        // use list implementation
+        if f.state == no_visit:
+            f.state = on_visit
+            f.distance = v.distance + 1
+            f.parent = v
+            queue.push(f)
+
+        v.state = end_visit
+```
+5. 上述代码有几点需要注意：
+    * 用while 循环不变式可以得到， **queue中的元素都是 on_visit**的
+    * on_visit表明：自生距离已经算好，但是自身的邻居还没有完全遍历过（邻居可以是no_visit，也可以是 end_visit）
+    * 复杂度 O(V+E),V 来源于初始化，E来源于每个点的边都会遍历一次
+
+6. 重要的Lemme：
+    * 最短路径lemme:
+        > 若u，v 相连，则  d(s,u) <= d(s,v)+1
+    * BFS 得到的 v.distance 值 >= d(s,v) (数归法)
+    * Queue 中的点最多只有两个不同的distance 也就是 d 和 d+1，换句话说：
+        对首.distance <= 队尾.distance + 1,
+        并且，vi.d <= vi+1.d
+    * 最终可以得到，BFS 一定是得到最短距离（反证法，假设了直接前驱结点这个概念，只用+1，并且也是parent点就能达到正在研究点）
+
+
 # 用图语言去描述算法问题
 
 ## Interval Scheduling 问题
