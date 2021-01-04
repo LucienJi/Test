@@ -138,6 +138,41 @@ DFS_Visit(v):
     * 其余是横向边
 
     * PS. 无向图中只有树边和后向边
+
+## DFS 应用：拓扑排序
+1. 对有向无环图实行拓扑排序，得到一个sequence v1,v2,v3,,,vk,满足：
+    > vi 一定是 vi+1 的祖先或者，无关节点，总之能完成类似**有前置要求的任务安排**
+    > 如果图中有边 (u,v), 则u.end_time > v.end_time
+
+2. Pseudo Code
+```cpp
+// Topological Sort
+// 调用先前写的DFS
+DFS(G)
+创建列表：以time_end 作为降序排列
+（每次有vertice 是 time_end 时，就将vertice 放在list的front上）
+```
+
+## DFS 应用：强连通分量（SCC）
+1. SCC 的定义: 任意(u,v) ，存在path 从 u 到 v，也存在path 从 v 到 u
+2. 将(G,E) reduce 到 (G_scc,E_scc),(这是一个有向无环图，原图必定有环)
+3. 算法核心是两次调用DFS，同时需要使用 图转置
+4. Pseudo Code
+```cpp
+DFS(G),重点标记 time_end
+//图转置
+/*安装第一次DFS的time_end 的结果，以降序排列（也就是拓扑排序的结果顺序）
+作为第二次DFS的访问顺序*/
+DFS(G_t)
+
+每次访问完一个树，这个树就是一个SCC
+
+```
+5. 为什么能够成立？
+    > Recap: 分量图（SCC） 是一个有向无环图
+    > Topo Sort 只能作用于 有向无环图图
+    > 第二次DFS时按照降序访问，其实是按照拓扑排序的结果访问 分量图中的等效节点
+    > 在访问G_t 时，从一个 连通分量只能是通向 一个已经被访问过的强连通分量，因此，不会放在同一颗树里
 # 用图语言去描述算法问题
 
 ## Interval Scheduling 问题
