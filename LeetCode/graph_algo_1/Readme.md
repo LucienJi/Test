@@ -66,7 +66,78 @@ while(!queue.empty()):
         并且，vi.d <= vi+1.d
     * 最终可以得到，BFS 一定是得到最短距离（反证法，假设了直接前驱结点这个概念，只用+1，并且也是parent点就能达到正在研究点）
 
+# 基础算法：深度优先搜索 DFS
+[和BFS不一样，这不是只用于单source node，不是构建最短距离，而是构建深度优先森林]
+1. 核心思想：DFS 总是对 **最近** 发现的节点近似探索，直到这个节点的所有**后代节点**都被探索完，才会回到该节点
+2. 和BFS不同，BFS能对source node出发能到达的所有节点构建广度优先树，但是DFS可以对全图（没有到不了的）构建一个森林！
+3. 颜色和时间戳：
+    * 未探索：白色 ； 探索中：灰色 ； 探索结束：黑色
+        * 用颜色 这个tag来标记state的状态可以很好地看清亲属关系
+    * 时间戳：发现时标记，探索结束时再标记
 
+4. Pseudo Code
+```cpp
+//初始化所有节点的颜色和状态
+
+DFS(G):
+for v in V:
+    v.state = no_visit
+    v.time_on = 0
+    v.time_off = 0
+    v.parent = NULL
+//初始化时间戳
+time = 0
+
+
+for v in V:
+    if v.state == no_visit
+    DFS_Visit(v)
+
+
+// 辅助递归函数
+
+DFS_Visit(v):
+    // 第一次发现
+    time+=1
+    v.state = on_visit
+    v.time_on = time
+    for u in N(v):
+        if u.state = no_visit
+            u.parent = v
+            DFS_Visit(u)
+
+    //结束所有后代的探索
+    // 改变改变状态，前进时间戳，标记结束时间
+    v.state = end_visit
+    time+=1
+    v.time_off = time
+
+```
+
+5. 为什么要用时间戳和颜色标记？对于图的结构探索
+    * 节点 u 是 节点 v 的后代 == u 是在 v.state=on_visit 时被发现的
+    * 时间戳的括号化定理：
+        * (x,(y,(z,z),y),x) 类似的样子
+        * 可以根据时间戳来判断两个节点 u ，v的关系 [u.time_on,u.time_off] , [v.time_on,v.time_off]
+            * 完全分离：在深度优先森林中，这俩在两颗树里
+            * 包含关系，被包含的那个是另一个的后代
+
+    * 白色路径定理：
+        * v 是 u 的后代 == 在发现u的时候（也就是 u.time_on的时候），存在一条path从u到v，path上所有的node 都是 no_visit
+
+6. 边的分类
+    * 树边：常见的通过探索 （DFS_Visit）
+    * 后向边: 从后代节点到祖先节点的
+    * 前向边: 从祖先节点到后代节点，但是没有被探索，也就是说有别的后代节点，提前探索了这个节点，你去的时候黄花菜都凉了
+    * 横向边: 所有其他边，比如指向其他树，非祖先，非后代
+
+7. state 和 边分类，在第一次遇到 边(u,v)时，v的状态就表明了这条的类型
+    * v.state = no_visit : 树边
+    * v.state = on_visit : 后向边
+    * v.state = end_visit: 前向边
+    * 其余是横向边
+
+    * PS. 无向图中只有树边和后向边
 # 用图语言去描述算法问题
 
 ## Interval Scheduling 问题
