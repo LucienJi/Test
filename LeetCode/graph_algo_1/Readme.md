@@ -266,8 +266,12 @@ return F
         * 面对 e = {x,y},检查一下 x,y是否已经联通，假如联通就下一条
     * 难点2：实现Union-Find结构式使用的小trick
         * path compression， 每次find的时候，都parent[v] = parent[parent[v]]
+        * **重点是path compression的效果**，每次Union 和 find 的复杂度被降到了 quasiconstant， **O(ka(n)),a(n) inverse Acker,ann function**
         * rank 来实现平衡数，记录高度，永远让小树的root接在大树的root下，只有两棵树相同高度时，总高度才会加1
-        * 根据上述的操作，假如高度是k时，那么这个partition至少有 2^k 个element，因此我们的find 复杂度能降到O(mlogm)
+        * 根据上述的操作，假如高度是k时，那么这个partition至少有 2^k 个element，因此我们的find 复杂度能降到O(k) constant
+        * 所以 kruskal的所有复杂度完全都留在了排序上
+
+    * 两者的都需要PQ来做到quasi排序，事实上可以用 bucket sorting 假如你知道你的weight上限是多少，就可以用空间换时间
 
 ## 重要的 Lemme
 
@@ -280,4 +284,10 @@ return F
 2. > Extendable: 形容 edge set F, 就是说存在 （V，F') 是minimum spanning tree，那么F extendable 就是 F in F'
 
     > F is extendable，then V = A + B 且 F 交 E(A,B) = 空集，其中 E(A,B)是联通两个partition的edge集合，也就是说F目前只在一个partition中，找到 e = min(E(A,B)) 那么F+e 依旧extendable
+
+
+
+
+
+# 经典案例
 

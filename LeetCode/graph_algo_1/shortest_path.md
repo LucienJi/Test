@@ -71,4 +71,24 @@ while(!Q.empty()){
                 * open_set.push(y),y
 ```
 
-## 
+## D*
+1. D_star的基本操作概述如下。
+与Dijkstra算法和A*类似，D *维护要评估的节点列表，称为“OPEN list”。节点被标记为具有以下几种状态之一:
+
+* NEW：意味着它从未被列入OPEN list
+* OPEN：意味着它当前在OPEN list中
+* CLOSED：意味着它不在OPEN list中
+* RAISE：意味着它的成本比上次OPEN list时要高
+* LOWER：意味着它的成本比上次OPEN list时要低
+
+2. 扩张阶段：
+* 从 G goal 向起点更新成本，重点是A*中使用parent，这里使用**反向指针**，也就是指向更接近goal的节点
+* 完成路径，根据反向指针一路走到底（下面是障碍处理）
+
+3. 障碍处理
+* 首先理解 raise 和 lower
+* H（X）：代价函数估计，表示当前State到G的开销估计。我理解为真实值，假如有东西挡路，那么H就增加
+* K（X）：Key Function，该值是优先队列Openlist中的排序依据，K值最小的State位于队列头，对于处于OpenList上的State X，K（X）表示从X被置于Openlist后，X到G的最小代价H（X），可以简单理解为K（X）将位于Openlist的State X划分为两种不同的状态，一种状态为Raise（如果K（X）<H（X）），用来传递路径开销的增加（例如某两点之间开销的增加，会导致与之相关的节点到目标的路径开销随之增加）；另一种状态为 Lower（如果K（X）=H（X）），用来传递路径开销的减少（例如某两点之间开销的减少，或者某一新的节点被加入到Openlist中，可能导致与之相关的节点到目标的路径开销随之减少）。我理解为机器人原来觉得的值，和 H(x)做对比，假如估计错了，就要回openlist重新进入扩张阶段。
+
+* 什么时候结束扩张：openlist 为空 或者， 机器人当前状态从openlist里出来了
+
