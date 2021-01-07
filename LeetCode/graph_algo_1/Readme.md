@@ -291,3 +291,66 @@ return F
 
 # 经典案例
 
+## Minimum Spanning Tree with Evolving Weights
+
+1. 问题描述：边权重We(t) 随时间变化，spanning tree必须同时决定，因此，total cost = min_{t,F}(sum(We(t)))
+2. we say all edges are determined at day t, then the total cost is C(t)
+3. at day t, we can use prim or krustal algo to obtain a optimal results in O(mlogm)
+
+### Question 
+1. Show that C(t) is the cost of a Minimum Spanning Tree of G with edge weights (we(t) : e in E).
+    这个很显然，完全是最小生成树的定义
+
+2. Case of Linear Edge Costs : We(t) = a_e * t + b_e
+    * Show that The function C is piecewise linear：
+        > 有限交点，因此有限的edge set，每次都选 min 值，自然是连续的
+    * Show that The function C is concave
+        > 和上一问相同的论断，有限集合
+
+3. 基于2很容易选出来最小值，任何线性变化权重的图，由于权重组合一定是concave，所以最小值一定在开头或者结尾
+
+4. 问题复杂一点，如何求出最大值？
+    * 基础想法：最大值一定是权重变换的intersection处，并且由于concave，最大值不是在中间（在中间这句话真是屁话）就是在两边
+    * 对intersection(E^2个)计算和排序需要O(E^2log(E)) 
+    * brute force 是不划算的，因为单次计算 最小生成树需要 O(ElgE)
+    * 对于concave这种quasi sorted的我们可以想到 二分法避免遍历
+    * > 对于边界 i，j， 选取 m = (i+j)/2, 比较 m-1 , m ,m+1,可以得到，m是在上升区域，下降区域还是最大点
+
+## 数三角
+
+1. 对于一张图，三角的定义是：当边 (w,u),(u,v),(v,w)都在时，这仨就是三角形
+2. 现实意义是：clustering coefficient of network
+
+3. 暴力解法：每次选三个node，在数据结构用matrix的基础上，O(1)check是不是相连，最终 O(V^3)
+
+4. 一种新的图表达方式：Double List 如何用list来实现我们这个快速check和删除，list的搜索是要deg（v)但是删除的代价很大，必须要O(V)，因为要跑到别人的list里把这个node删掉。
+新pointer的设计，会有 O(E+V)个pointer
+```cpp
+class NodeList{
+    int v // 当且的邻居
+    NodeList next;
+    NodeList prev;
+
+    NodeList u // 这个u就是 以v的角度加入的u这个node
+}
+```
+5. 新代码，基于这样的新数据结构,复杂度 O(VE)
+```cpp
+count = 0
+for u in V:
+    for v in N(u):
+        mark(v)
+    for v in N(u):
+        for w in N.(v):
+            if w.isMarked() // 说明此事的 w 也是u的neighbor，因为只有w的neighbor被marked
+                count++;
+        unmark(v)
+    remove(u)
+```
+6. 还能再改进一次，就是对u的访问顺序做出调整（大部分的图改进都对node的访问顺序做出手脚）
+    * 先访问deg(u) 大的u
+    * 计算复杂度的角度不再是看node，而是看组成的edge(u,v),因为假设u是第一轮循环的，v是第二轮循环，因此再次访问的时候，min(deg(u),deg(v)) = deg(v), 再用下面对node的邻居数量做出node分类
+    * > V_1 = {v, deg(v)>sqrt(E)}, 数量小于 2*sqrt(E)
+
+
+    
