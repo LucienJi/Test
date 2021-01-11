@@ -132,8 +132,50 @@ for k in range(n):  ## 每次最多用k
 4. 因为和 bellman 类似的性质，我们也能顺便得到negative cycle 判断，不用额外运行，只需要查一下 d[i,i],因为，d[i,i]在0步时就应该fix了，值就是0，假如经过最多n个nodes，你还能减少，就说明，绕了一圈负环
 
 ## Eulerian Cycles 不难的问题
+1. 问题简述：
+    * 一笔画出所有的边 edge，同时也是cycle
+    * 定理：
+        > 一个connected  graph 能有eulerian cycle == 所有的node 的degree 是偶数
+        > 一个有 enlerian cycle 的图，那么只用 O(m) 就能计算出这个环
+
 
 ## Hamilton Cycle NP 困难的问题
+1. 问题简述：
+    * 一笔画完所有的点，同时也是cycle
+    * NP-complete
+
+2. 经典案例：TSP(traveling salesman problem)
+    * 一笔走完所有的城市，不带重复
+    * 总距离最少
+
+3. 稍微简化一点的TSP：metric TSP
+    * 在TSP的要求上，对Graph再加上一点要求，让求解更加简单一点
+    * d(i,j) <= d(i,k) + d(k,j)
+        * 基于 metric TSP，我们有一个给力的定理；short-cut TH：
+        > 对于 metric TSP，假设cycle C 包含了每个顶点至少一次，那么必定能在O(|C|)时间内计算出一个C
+    ' 也是一个环，但是每个顶点只包含正好一次！！
+
+4. Pseudo Code 近似系数2 的 MST-based 版本（基于最小生成树）
+```python
+## 将输入的 G 看做一个 complete graph
+1. 利用 prim、krustal算法O(ElgE)得到 MST ，取名为 T
+2. 将T中的edge double，保证这是一个拥有eulerian cycle 的图
+3. 计算一个 eulerian cycle C（问题是 eulerian 保证每个边都有，这就意味着有些节点走了不止一遍）
+4. 使用 short-cutting 方法，计算一个 hamiltonian H
+```
+
+
+* 最值得注意就是，在 Metric TSP中，我们计算的 MST 的权重和，其实是TSP权重和的lower bound，最终的解一定比 MST的要好
+
+5. Pseudo Code with 近似系数 1.5
+
+```python
+## 将输入的 G 看做一个 complete graph
+1. 利用 prim、krustal算法O(ElgE)得到 MST ，取名为 T
+2. 将T中的有奇数edge 的node 拎出来，做一个 perfect matching，要求是这是总的weight和最小的matching，相当于让这些个odd nodes 自己内部解决了，保证这是一个拥有eulerian cycle 的图
+3. 计算一个 eulerian cycle C（问题是 eulerian 保证每个边都有，这就意味着有些节点走了不止一遍）
+4. 使用 short-cutting 方法，计算一个 hamiltonian H
+```
 
 
 
