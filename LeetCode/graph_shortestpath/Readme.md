@@ -178,7 +178,53 @@ for k in range(n):  ## 每次最多用k
 ```
 
 
+# 经典问题
+## 找欧拉环路
 
+1. 先是找circuit，未必完全遍历所有edge
+
+* Pseudo Code： FindCircuit(G,v)
+```python
+#input: G and v
+res = {v}
+node = v
+while(!(v.d+ == v.d-  and v.d+ == 0)){
+    e = Find_one_of_the_rest_edge(node)
+    res = res + {e}
+    node = e.other_node
+    res = res + {node}
+
+}
+return res
+
+
+```
+2. Pseudo Code：Euler(v)
+
+```python
+res = [] ## supposed to be linked list
+while G.isnotEmpty():
+    circuit = FindCircuit(G,v)
+    if res is empty:
+        res = circuit
+    else:
+        pre_v  =v.prev
+        tmp = pre_v.next
+        pre_v.next = circuit.first
+        circuit.last.next = tmp
+
+    Delete_all_isolated_node(G)
+
+    v = one_of_the_rest_node(G)
+
+```
+3. Complexity
+    * graph: double linked list:
+        * No need to search a certain node: just the first neighbor on store O(1)
+        * Delete an edge, each out-neighbors not only point to next out-neighbors, also point to the corresponding in-neighbor
+        * Deletion in linked list O(1)
+    * FindCircuit : O(|res|)
+    * Insert circuit by linked list O(1)
 
 
 
