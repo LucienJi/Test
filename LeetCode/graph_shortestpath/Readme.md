@@ -25,9 +25,16 @@
 1. 如何解决DP的访问顺序？构建一个 V0 由已经确定下来距离的nodes组成的集合，根据松弛收敛的效果，可以不断通过拓展 V0 来实现
 2. 怎么扩展我们的 V0
 > v in V\V0, v 满足 min(d(s,u)+ w(u,v), u in V0 and u is neighbor of v)
+
 > 并且此时，d(s,v) = min(d(s,u)+ w(u,v), u in V0 and u is neighbor of v)
 
-3. PseudoCode
+3. 循环不变式，证明Dijkstra的正确性
+    * Loop invariant: 每个在V0的点都是已经v.d = d(s,v)
+    * 初始化：成立，因为V0是空集
+    * 保持：假设V0里面的已经是好了的，现在看 u 是在准备加入的点，u 有没有已经被一个到位的点v relax过了，如果有，那么根据relax 定理，他也就到位了，但是有没有可能是一个乳臭未干的node去relax他呢？不可能只有加入过V0才能relax别人，所以u的前置节点必定到位 y.d = d(s,y) < d(s,u) <= u.d ，所以y.d一定是提前被选出来的
+    * O(Elg(V))
+
+4. PseudoCode
 
 *Dijkstra 算法其实是greedy算法，每次都从 V - V0 这个集合里挑选距离自己最近的*
 
@@ -100,6 +107,15 @@ for v in V:
 
 return TRUE
 ```
+## DAG-Shortest-Path: 有向无环图 + 单源最短路径 + 可以负边
+1. 相当于Dijkstra差不多，前者没有负边，这个不能有环
+2. 对边进行拓扑排序（因为有向无环图），依次进行relax操作
+3. 为什么拓扑排序？假如存在 u 到 v 的一条路，那么在拓扑排序中，u一定在v前面,因此这个顺序的relax能保证一路收敛
+4. DAG 算法的应用：PERT，关键路径 = 有向无环图中最长的路 = 所有可执行的工作的最长时长
+    * 小trick是将权重换成负数，那么最小路径 = 最长时间
+
+
+
 
 ## Floyd-Warshall: 所有距离对 + 可以负边
 
@@ -107,10 +123,21 @@ return TRUE
 * 这个办法在稀疏图的情况下，显著优于土办法 
 
 1. DP 中 knapsack 的思想
-    * 从 i 到 j ：只用前 k-1 node， 或者 ，使用了第k个node（到达 k ，从 k 再次出发，两段路中途不用 k，只用k-1）
+    * 换成人话：考虑所有点集的子集{1,,,k},节点对（i，j）路径P只使用{1,,k}中的节点，那么就研究路径P和节点k的关系，是否使用了节点k
+
+    * 从 i 到 j ：只用前 k-1 node， 或者 ，使用了第k个node（到达 k ，从 k 再次出发，两段路中途不用 k，只用k-1）；假如没用那么P中的所有中间节点都是{1,,k-1};假如是了，那么根据无环性质，所以只会经过k一次，那么k之前就是只用{1,,k-1},k之后只用{1,,k-1}
+
     * dk(i,j) = min(dk-1(i,j) , dk-1(i,k) + dk-1(k,j))
 
-2. 答案用 matrix 来装
+2. 路径：前驱结点矩阵（单源节点可以只用parent点来解决）
+前驱结点
+```python
+#初始化
+Path(i,j,0) = null if i==j or wij==inf else i
+Path(i,j,k) = Path(i,j,k-1) if d(i,j,k-1) <= d(i,k,k-1) + d(k,j,k-1)  ## 走k节点不划算
+Path(i,j,k) = Path(k,j,k-1) if d(i,j,k-1) > d(i,k,k-1) + d(k,j,k-1)   ## 走k
+
+```
 
 3. Pseudocode
 
@@ -179,9 +206,22 @@ for k in range(n):  ## 每次最多用k
 
 
 # 经典问题
+1. 欧拉环路 ； 欧拉通路
+> 无向图 有 欧拉环路 == 每个节点都有偶数degree + 联通
+
+> 有向图 有 欧拉环路 == 每个节点的入度=出度 + 属于一个 strong connected component（强连通分量）
+
+> 无向图 有 欧拉通路 == 联通 + 只有两个node有奇数degree
+
+> 有向图 有 欧拉环路 == 一个node 入-出 = 1 + 一个node 出-入 = 1 + 属于一个 strong connected component + 其余节点的入度 = 出度
+
+2. handshaking lemma
+    > 所有无向图：奇度的node的个数是偶数
+
 ## 找欧拉环路
 
 1. 先是找circuit，未必完全遍历所有edge
+    * 重要的性质：在欧拉图中的walk都可以拓展成一个circuit(not necessary eulerian)
 
 * Pseudo Code： FindCircuit(G,v)
 ```python
@@ -229,3 +269,8 @@ while G.isnotEmpty():
 
 
 
+## 中国邮递员问题
+1. 遍历所有的边至少一次，并且权重和最小，最终回到出发点
+2. 不管是不是欧拉图，欧拉环路都是中国邮递员问题的lowerbound
+3. 假如是欧拉环路：复杂度O(V) 找到环路就行了
+4. 假如是棵树 （E=V-1），复杂度也是O(V),因为每条边必须走2次
