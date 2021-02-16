@@ -1,5 +1,83 @@
 # Dynamic Programming
 
+1. DP 核心： 
+    > 寻找最优解的结构特征
+
+    > 递归的定义最优解的值, 自底向上的计算方式
+
+    > 利用计算出的信息构造最优解
+
+2. 我们必须搞清楚 问题 + 子问题 的依赖关系
+
+## 简单例子
+
+### 切板
+1. 总长 n，不同切割的单价 P[i]
+
+2. 定义最优解： res[n] = max(res[i] + P[n-i]), for i = 0,1,2,,,n-1
+
+3. 依赖关系是 res[n] 依赖于前面全部 res[0],,,res[n-1],
+
+4. Attention: 不要用recursion，要用iteration
+```python
+rse[0] = 0
+res[1] = p[1]
+for(int i = 1;i<=n;i++){
+    tmp_res = 0;
+    for(int j = 0;j<i){
+        if(res[j] + P[i-j] > tmp_res){
+            tmp_res = res[j] + P[i-j];
+        }
+    }
+
+    res[i] = tmp_res;
+}
+
+return tmp_res[n];
+```
+
+5. Attention: 一定要尝试 track solution！！
+我要去记录： n 时我切多少，cut[n],然后，还剩 n - cut[n], 下次找 cut[n-cut[n]]
+
+```python
+rse[0] = 0
+cut[0] = 0
+res[1] = p[1]
+cut[1] = 1
+
+for(int i = 1;i<=n;i++){
+    tmp_res = 0;
+    for(int j = 0;j<i){
+        if(res[j] + P[i-j] > tmp_res){
+            tmp_res = res[j] + P[i-j];
+            cut[i] = i-j
+        }
+    }
+
+    res[i] = tmp_res;
+}
+
+return tmp_res[n],cut
+```
+
+### Matrix Multiplication
+
+1. 给定 A* B *C *D *E.... 找一种乘法的结合律，可以最小的计算量
+
+2. 转移方程： mul[i,j] : 从 0 ✖️到n 位，= min( mul[i,k-1] +  mul[k,j]) + ai * ak-1 * aj+1 for i = 0，，n; mul[i,i] = 0
+
+3. 怎么记录solution？我猜测：sol[i,j] = k ，k 是上述那个最优风格， 举例 sol[0,n] = k，有一个括号：（）k位（），找sol[0,k] 和 sol[k,n]
+
+### Knapsack 
+
+1. n 个问题，有wi 重量 和 pi 的价值，我们有重量限制：Wmax!!! 我们拓宽任务的规模：原先只track 使用第几个物品，你还有track 可以使用的重量
+
+2. 转移方程： res[i,w] = 只看前 i 个物品,我们用 w 的上限，要么拿 第i个，要么不拿：
+    > res[i] = max(pi + res[i-1,w-wi], res[i-1,w])
+
+3. Attention：记录最优解：sol[i,w] = 1，0  是指我现在拿的东西，假如是 0 在w 的限重下，我不拿 i 号物品
+
+4. 再优化！！！！观察问题依赖图，你发现这是res[i,w]依赖于res[i-1,w],所以reduce 到 O(W)空间
 
 
 ## 经典案例
